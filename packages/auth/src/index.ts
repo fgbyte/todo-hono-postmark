@@ -1,0 +1,74 @@
+import { db } from "@todo-hono-postmark/db";
+import * as schema from "@todo-hono-postmark/db/schema/auth";
+import { env } from "@todo-hono-postmark/env/server";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { sendEmail } from "@todo-hono-postmark/mail";
+import { openAPI } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+
+    schema: schema,
+  }),
+  trustedOrigins: [env.CORS_ORIGIN],
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true, // Require email verification before login
+  },
+  plugins: [openAPI()], //Activate OpenAPI DOCS 👈
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      console.info("[auth] sending verification email", {
+        email: user.email,
+        userId: user.id,
+      });
+
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: "Verify your email address",
+          text: `Click the link to verify your email: ${url}`,
+          tag: "auth-verification",
+        });
+
+        console.info("[auth] verification email sent", {
+          email: user.email,
+          userId: user.id,
+        });
+      } catch (error) {
+        console.error("[auth] verification email failed", {
+          email: user.email,
+          userId: user.id,
+          error,
+        });
+
+        throw error;
+      }
+    },
+  },
+  // uncomment cookieCache setting when ready to deploy to Cloudflare using *.workers.dev domains
+  // session: {
+  //   cookieCache: {
+  //     enabled: true,
+  //     maxAge: 60,
+  //   },
+  // },
+  secret: env.BETTER_AUTH_SECRET, //sacadas de alchemy
+  baseURL: env.BETTER_AUTH_URL, //sacadas de alchemy
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+      secure: true,
+      httpOnly: true,
+    },
+    // uncomment crossSubDomainCookies setting when ready to deploy and replace <your-workers-subdomain> with your actual workers subdomain
+    // https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
+    // crossSubDomainCookies: {
+    //   enabled: true,
+    //   domain: "<your-workers-subdomain>",
+    // },
+  },
+});

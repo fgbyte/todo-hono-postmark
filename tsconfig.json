@@ -1,0 +1,3 @@
+{
+  "extends": "@todo-hono-postmark/config/tsconfig.base.json",
+}

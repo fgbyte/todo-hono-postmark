@@ -1,0 +1,28 @@
+{
+  "name": "@todo-hono-postmark/auth",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "^1.5.5",
+    "@todo-hono-postmark/db": "workspace:*",
+    "@todo-hono-postmark/env": "workspace:*",
+    "@todo-hono-postmark/mail": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@todo-hono-postmark/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
