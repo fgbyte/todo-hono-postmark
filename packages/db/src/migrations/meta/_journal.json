@@ -15,6 +15,13 @@
       "when": 1775231521704,
       "tag": "0001_cooing_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775538829647,
+      "tag": "0002_majestic_susan_delgado",
+      "breakpoints": true
     }
   ]
 }

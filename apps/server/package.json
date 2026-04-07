@@ -8,6 +8,8 @@
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^1.2.4",
+    "@scalar/hono-api-reference": "^0.10.6",
     "@todo-hono-postmark/auth": "workspace:*",
     "@todo-hono-postmark/db": "workspace:*",
     "@todo-hono-postmark/env": "workspace:*",

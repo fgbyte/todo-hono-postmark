@@ -16,10 +16,11 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
-    "@todo-hono-postmark/env": "workspace:*",
     "@neondatabase/serverless": "^1.0.2",
+    "@todo-hono-postmark/env": "workspace:*",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.1",
+    "drizzle-zod": "^0.8.3",
     "zod": "catalog:"
   },
   "devDependencies": {
