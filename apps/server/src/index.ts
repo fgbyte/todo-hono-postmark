@@ -22,6 +22,7 @@ app.use(
 //routes
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 app.route("/api/todos", todosRoute);
+
 // OpenAPI docs en /doc
 app.doc("/doc", {
   openapi: "3.0.0",
