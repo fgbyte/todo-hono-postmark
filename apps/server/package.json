@@ -16,7 +16,7 @@
     "@todo-hono-postmark/mail": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
-    "hono": "^4.8.2",
+    "hono": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
