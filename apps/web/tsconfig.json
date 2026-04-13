@@ -1,4 +1,5 @@
 {
+  "extends": "@todo-hono-postmark/config/tsconfig.base.json",
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
@@ -9,10 +10,13 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "types": ["vite/client"],
-    "rootDirs": ["."],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@server/*": ["../server/src/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "../server" }
+  ]
 }
