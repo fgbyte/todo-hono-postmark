@@ -23,8 +23,8 @@ const router = app
   .use("/*", corsMiddleware) //enabled cors for all routes
   //routes
   .on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
-  .route("/api/todos", todosRoute)
-  .route("/api/people", peopleRoutes);
+  .route("/api/todos", todosRoute) //protected & OpenAPI route
+  .route("/api/people", peopleRoutes); //public route
 
-export type AppType = typeof router; // im just typing only the '/api/people' route here to pass to the client
+export type AppType = typeof router; // passing all the typed routes to the client
 export default app;
