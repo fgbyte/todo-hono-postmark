@@ -1,38 +1,30 @@
 import { auth } from "@todo-hono-postmark/auth";
-import { env } from "@todo-hono-postmark/env/server";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import { todosRoute } from "./routes/todos.routes";
 import { Scalar } from "@scalar/hono-api-reference";
+import { logger } from "hono/logger";
+import { corsMiddleware } from "./middlewares/cors-middleware";
+import { todosRoute } from "./routes/todos.routes";
+import { peopleRoutes } from "./routes/people.routes";
 
 const app = new OpenAPIHono();
-//middlewares
-app.use(logger());
-app.use(
-  "/*", //enabled cors for all routes
-  cors({
-    origin: env.CORS_ORIGIN, //alchemy envs
-    allowMethods: ["GET", "POST", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-);
 
-//routes
-app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
-app.route("/api/todos", todosRoute);
+const router = app
+  // RAW OpenAPI en /doc
+  .doc("/doc", {
+    openapi: "3.0.0",
+    info: { version: "1.0.0", title: "API" },
+  })
+  // Scalar UI en /docs
+  .get("/docs", Scalar({ url: "/doc" }))
+  //root route
+  .get("/", (c) => c.text("OK"))
+  //middlewares
+  .use(logger())
+  .use("/*", corsMiddleware) //enabled cors for all routes
+  //routes
+  .on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
+  .route("/api/todos", todosRoute)
+  .route("/api/people", peopleRoutes);
 
-// OpenAPI docs en /doc
-app.doc("/doc", {
-  openapi: "3.0.0",
-  info: { version: "1.0.0", title: "API" },
-});
-// UI disponible en /docs
-app.get("/docs", Scalar({ url: "/doc" }));
-
-app.get("/", (c) => {
-  return c.text("OK");
-});
-
+export type AppType = typeof router; // im just typing only the '/api/people' route here to pass to the client
 export default app;
