@@ -4,7 +4,7 @@ import { env } from "@todo-hono-postmark/env/web";
 import { hc } from "hono/client";
 import type { AppType } from "../../../server/src";
 
-const client = hc<AppType>(env.VITE_SERVER_URL);
+const client = hc<AppType>(env.VITE_SERVER_URL); //url for the server but loaded for env/web
 
 export const Route = createFileRoute("/demo/tanstack-query")({
   component: RouteComponent,

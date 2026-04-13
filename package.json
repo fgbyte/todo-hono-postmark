@@ -25,6 +25,7 @@
   "scripts": {
     "dev": "turbo -F @todo-hono-postmark/infra -F @todo-hono-postmark/db dev db:studio",
     "deploy": "turbo -F @todo-hono-postmark/infra deploy",
+    "destroy": "turbo -F @todo-hono-postmark/infra destroy",
     "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
