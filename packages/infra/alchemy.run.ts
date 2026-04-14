@@ -1,9 +1,10 @@
 import alchemy from "alchemy";
 import { Vite } from "alchemy/cloudflare";
 import { Worker } from "alchemy/cloudflare";
-import { requireEnv } from "./utils/requireEnv";
+import { requireEnv, stage } from "./utils/stageEnv";
 
 const app = await alchemy("todo-hono-postmark");
+console.log(`Deploying to stage: ${app.stage} (detected: ${stage})`);
 
 export const web = await Vite("web", {
   cwd: "../../apps/web",

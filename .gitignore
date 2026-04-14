@@ -12,6 +12,11 @@ build
 .env
 .env*.local
 
+# Environment files by stage
+.env.dev
+.env.staging
+.env.production
+
 # IDEs and editors
 .vscode/*
 !.vscode/settings.json
