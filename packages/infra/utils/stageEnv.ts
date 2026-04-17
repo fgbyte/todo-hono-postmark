@@ -13,12 +13,23 @@ function detectStage(): string {
     return process.env.ALCHEMY_STAGE;
   }
 
-  // 2. --stage CLI argument
-  const stageArg = process.argv.find((arg) => arg.startsWith("--stage="));
-  if (stageArg) {
-    const stageValue = stageArg.split("=")[1];
-    if (stageValue) {
-      return stageValue;
+  // 2. --stage CLI argument (handles both "--stage=value" and "--stage value" formats)
+  const stageIndex = process.argv.findIndex((arg) => arg === "--stage" || arg.startsWith("--stage="));
+  if (stageIndex !== -1) {
+    const stageArg = process.argv[stageIndex];
+    if (stageArg) {
+      // Check for "--stage=value" format
+      if (stageArg.startsWith("--stage=")) {
+        const stageValue = stageArg.split("=")[1];
+        if (stageValue) {
+          return stageValue;
+        }
+      }
+      // Check for "--stage value" format (next argument is the value)
+      const nextArg = process.argv[stageIndex + 1];
+      if (nextArg && !nextArg.startsWith("-")) {
+        return nextArg;
+      }
     }
   }
 

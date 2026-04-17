@@ -5,7 +5,13 @@
   "scripts": {
     "dev": "alchemy dev",
     "deploy": "alchemy deploy",
-    "destroy": "alchemy destroy"
+    "destroy": "alchemy destroy",
+    "deploy:dev": "alchemy deploy --stage dev",
+    "deploy:staging": "alchemy deploy --stage staging",
+    "deploy:prod": "alchemy deploy --stage production",
+    "destroy:dev": "alchemy destroy --stage dev",
+    "destroy:staging": "alchemy destroy --stage staging",
+    "destroy:prod": "alchemy destroy --stage production"
   },
   "dependencies": {
     "dotenv": "catalog:",
