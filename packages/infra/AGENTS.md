@@ -37,6 +37,52 @@ packages/infra/
 - **No hardcoded secrets** - use env vars
 - **No direct CF API calls** - use Alchemy resources
 
+## Multi-Environment Setup (NEW)
+
+The project now supports multiple environments (dev/staging/prod) using Alchemy's native stage system.
+
+### Environment Files
+- `apps/web/.env.{dev,staging,production}` - Frontend variables (VITE_SERVER_URL)
+- `apps/server/.env.{dev,staging,production}` - Backend variables (DATABASE_URL, CORS_ORIGIN, etc.)
+
+### Deploy Commands
+```bash
+bun run deploy:dev      # Deploy to dev environment
+bun run deploy:staging  # Deploy to staging environment
+bun run deploy:prod     # Deploy to production environment
+```
+
+### Destroy Commands
+```bash
+bun run destroy:dev      # Destroy dev resources
+bun run destroy:staging  # Destroy staging resources
+bun run destroy:prod     # Destroy production resources
+```
+
+### Important: adopt: true
+When creating Workers, always set `adopt: true` to allow redeployment without conflicts:
+
+```typescript
+export const web = await Vite("web", {
+  cwd: "../../apps/web",
+  assets: "dist",
+  adopt: true,  // ← Key setting for redeployment
+  bindings: { ... },
+});
+
+export const server = await Worker("server", {
+  cwd: "../../apps/server",
+  entrypoint: "src/index.ts",
+  adopt: true,  // ← Key setting for redeployment
+  bindings: { ... },
+});
+```
+
+This allows the same stage to be deployed multiple times (redeploy) without "Worker already exists" errors.
+
+### Documentation
+See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for detailed usage guide.
+
 ## Commands
 
 ```bash
