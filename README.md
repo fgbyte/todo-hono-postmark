@@ -21,12 +21,38 @@ This project is a modified version of [Better Fullstack](https://github.com/Marv
 
 ## Environment Variables
 
-⚠️ **IMPORTANT**: This project requires environment variables to be configured. Without these files, the infrastructure will not start.
+⚠️ **IMPORTANT**: This project requires environment variables to be configured per environment.
 
-- **`.env`**: Environment variables for production
-- **`.env.local`**: Environment variables for development
+Create environment files for each stage:
 
-Make sure to create these files before running the project. Check with your team to get the required variables.
+**apps/web/.env.{stage}** - Frontend variables:
+- `.env.dev` - Development
+- `.env.staging` - Staging
+- `.env.production` - Production
+
+**apps/server/.env.{stage}** - Backend variables:
+- `.env.dev` - Development
+- `.env.staging` - Staging
+- `.env.production` - Production
+
+### Required Variables
+
+**apps/web/.env.{stage}:**
+```
+VITE_SERVER_URL=https://server-{stage}.your-domain.workers.dev
+```
+
+**apps/server/.env.{stage}:**
+```
+DATABASE_URL=postgresql://user:pass@host/db-{stage}?sslmode=require
+CORS_ORIGIN=https://web-{stage}.your-domain.workers.dev
+BETTER_AUTH_SECRET=your-secret
+BETTER_AUTH_URL=https://server-{stage}.your-domain.workers.dev
+POSTMARK_SERVER_TOKEN=your-token
+POSTMARK_FROM_EMAIL=your-email
+```
+
+> **Note**: Each stage uses a separate database. Use different DATABASE_URL values.
 
 ## Getting Started
 
@@ -60,11 +86,30 @@ The API is running at [http://localhost:3000](http://localhost:3000).
 
 ## Deployment (Cloudflare via Alchemy)
 
-- Dev: bun run dev
-- Deploy: bun run deploy
-- Destroy: bun run destroy
+This project supports multi-environment deployments.
 
-For more details, see the guide on [Deploying to Cloudflare with Alchemy](https://better-fullstack-web.vercel.app/docs/guides/cloudflare-alchemy).
+### Deploy Commands
+
+```bash
+bun run deploy:dev      # Deploy to dev
+bun run deploy:staging  # Deploy to staging
+bun run deploy:prod     # Deploy to production
+```
+
+### Destroy Commands
+
+```bash
+bun run destroy:dev      # Destroy dev
+bun run destroy:staging  # Destroy staging
+bun run destroy:prod     # Destroy production
+```
+
+Each stage creates isolated Workers:
+- `todo-hono-postmark-web-dev` / `todo-hono-postmark-server-dev`
+- `todo-hono-postmark-web-staging` / `todo-hono-postmark-server-staging`
+- `todo-hono-postmark-web-production` / `todo-hono-postmark-server-production`
+
+See [ENVIRONMENTS.md](./packages/infra/ENVIRONMENTS.md) for details.
 
 ## Git Hooks and Formatting
 
@@ -93,3 +138,11 @@ todo-hono-postmark/
 - `bun run db:push`: Push schema changes to database
 - `bun run db:studio`: Open database studio UI
 - `bun run check`: Run Oxlint and Oxfmt
+
+### Deployment
+- `bun run deploy:dev`: Deploy to development
+- `bun run deploy:staging`: Deploy to staging
+- `bun run deploy:prod`: Deploy to production
+- `bun run destroy:dev`: Destroy development
+- `bun run destroy:staging`: Destroy staging
+- `bun run destroy:prod`: Destroy production
