@@ -24,8 +24,6 @@
   "type": "module",
   "scripts": {
     "dev": "turbo -F @todo-hono-postmark/infra -F @todo-hono-postmark/db dev db:studio",
-    "deploy": "turbo -F @todo-hono-postmark/infra deploy",
-    "destroy": "turbo -F @todo-hono-postmark/infra destroy",
     "deploy:dev": "bun run --filter @todo-hono-postmark/infra deploy:dev",
     "deploy:staging": "bun run --filter @todo-hono-postmark/infra deploy:staging",
     "deploy:prod": "bun run --filter @todo-hono-postmark/infra deploy:prod",
