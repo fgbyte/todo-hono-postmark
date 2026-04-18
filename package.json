@@ -23,6 +23,7 @@
   },
   "type": "module",
   "scripts": {
+    "build": "turbo build",
     "dev": "turbo -F @todo-hono-postmark/infra -F @todo-hono-postmark/db dev db:studio",
     "deploy:dev": "bun run --filter @todo-hono-postmark/infra deploy:dev",
     "deploy:staging": "bun run --filter @todo-hono-postmark/infra deploy:staging",
@@ -30,7 +31,6 @@
     "destroy:dev": "bun run --filter @todo-hono-postmark/infra destroy:dev",
     "destroy:staging": "bun run --filter @todo-hono-postmark/infra destroy:staging",
     "destroy:prod": "bun run --filter @todo-hono-postmark/infra destroy:prod",
-    "build": "turbo build",
     "check-types": "turbo check-types",
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
