@@ -120,12 +120,15 @@ See [ENVIRONMENTS.md](./packages/infra/ENVIRONMENTS.md) for details.
 ```
 todo-hono-postmark/
 ├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono)
+│   ├── web/          # React + TanStack Router frontend
+│   └── server/       # Hono API backend
 ├── packages/
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
+│   ├── auth/         # Better-Auth configuration
+│   ├── db/           # Drizzle schema, queries, migrations
+│   ├── mail/         # Postmark email service
+│   ├── infra/        # Alchemy deployment config
+│   ├── config/       # Shared TypeScript configs
+│   └── env/          # Environment validation (T3 env)
 ```
 
 ## Available Scripts
