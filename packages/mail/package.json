@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "form-data": "^4.0.5",
-    "postmark": "^4.0.5"
+    "postmark": "^4.0.7"
   },
   "devDependencies": {
     "@todo-hono-postmark/config": "workspace:*",
