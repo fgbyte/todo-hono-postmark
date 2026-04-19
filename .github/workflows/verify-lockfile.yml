@@ -6,6 +6,8 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # Skip for Dependabot PRs - they will update lockfile automatically
+    if: github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v4
 
