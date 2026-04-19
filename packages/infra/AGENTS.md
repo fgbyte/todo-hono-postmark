@@ -81,7 +81,7 @@ export const server = await Worker("server", {
 This allows the same stage to be deployed multiple times (redeploy) without "Worker already exists" errors.
 
 ### Documentation
-See [ENVIRONMENTS.md](./ENVIRONMENTS.md) for detailed usage guide.
+See [ENVIRONMENTS.md](/docs/ENVIRONMENTS.md) for detailed usage guide.
 
 ## Commands
 
