@@ -4,7 +4,7 @@ import { Worker } from "alchemy/cloudflare";
 import { requireEnv, stage } from "./utils/stageEnv";
 
 const app = await alchemy("todo-hono-postmark");
-console.log(`Deploying to stage: ${app.stage} (detected: ${stage})`);
+console.log(`(detected: ${stage})`);
 
 export const web = await Vite("web", {
   cwd: "../../apps/web",
@@ -12,6 +12,10 @@ export const web = await Vite("web", {
   adopt: true,
   bindings: {
     VITE_SERVER_URL: requireEnv("VITE_SERVER_URL"),
+  },
+  dev: {
+    command: "bun run vite dev",
+    domain: "localhost:3001",
   },
 });
 
