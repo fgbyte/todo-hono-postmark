@@ -20,8 +20,8 @@ const router = app
   //root route
   .get("/", (c) => c.text("OK"))
   //middlewares
-  .use(logger())
   .use("/*", corsMiddleware) //enabled cors for all routes
+  .use(logger())
   //routes
   .on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
   .route("/api/todos", todosRoute) //protected & OpenAPI route
