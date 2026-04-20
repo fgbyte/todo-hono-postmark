@@ -60,9 +60,10 @@ export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL, //sacadas de alchemy
   advanced: {
     defaultCookieAttributes: {
-      sameSite: "none",
-      secure: true,
+      sameSite: env.BETTER_AUTH_URL?.startsWith("https://") ? "none" : "lax",
+      secure: env.BETTER_AUTH_URL?.startsWith("https://") ?? false,
       httpOnly: true,
+      path: "/",
     },
     // uncomment crossSubDomainCookies setting when ready to deploy and replace <your-workers-subdomain> with your actual workers subdomain
     // https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
