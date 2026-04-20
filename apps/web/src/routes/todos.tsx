@@ -12,7 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Trash2, AlertCircle, ClipboardList } from "lucide-react";
 
-const client = hc<AppType>(env.VITE_SERVER_URL);
+const client = hc<AppType>(env.VITE_SERVER_URL, {
+  fetch: (input: string | URL | Request, init?: RequestInit) =>
+    fetch(input, {
+      ...init,
+      credentials: "include",
+    }),
+});
 
 export const Route = createFileRoute("/todos")({
   component: RouteComponent,
