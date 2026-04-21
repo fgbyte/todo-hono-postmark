@@ -40,15 +40,27 @@ export const todosRoute = new Hono<HonoEnv>()
   // POST /api/todos - Create todo
   .post("/", zValidator("json", CreateTodoSchema), async (c) => {
     const user = c.get("user");
-    const todoData = c.req.valid("json");
+    console.log("POST /api/todos - user:", user?.id);
+    
+    let todoData;
+    try {
+      todoData = c.req.valid("json");
+      console.log("POST /api/todos - body:", todoData);
+    } catch (e) {
+      console.error("POST /api/todos - validation error:", e);
+      return c.json({ message: "Invalid request body", error: String(e) }, 400);
+    }
+    
     try {
       const newTodo = await insertTodo({
         ...todoData,
         userId: user.id,
       });
+      console.log("POST /api/todos - created:", newTodo?.id);
       return c.json(newTodo, 201);
     } catch (error) {
-      return c.json({ message: "Failed to create todo", err: error }, 500);
+      console.error("POST /api/todos - insert error:", error);
+      return c.json({ message: "Failed to create todo", err: String(error) }, 500);
     }
   })
   // PATCH /api/todos/:id - Update todo

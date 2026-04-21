@@ -28,5 +28,11 @@ const router = app
   .route("/api/people", peopleRoutes) //public route
   .route("/api/test", testRoute); //public route
 
+// Global error handler
+app.onError((err, c) => {
+  console.error("[Global Error]", c.req.method, c.req.url, err);
+  return c.json({ message: "Internal Server Error", error: String(err) }, 500);
+});
+
 export type AppType = typeof router; // passing all the typed routes to the client
 export default app;

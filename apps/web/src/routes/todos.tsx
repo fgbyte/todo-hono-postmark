@@ -31,7 +31,7 @@ function RouteComponent() {
       if (!res.ok) throw new Error("Failed to fetch todos");
       return res.json();
     },
-  });//✅
+  }); //✅
 
   const addTodoMutation = useMutation({
     mutationFn: async (title: string) => {
@@ -59,21 +59,25 @@ function RouteComponent() {
         userId: "",
       };
 
-      // Aplicamos el cambio optimista (modificamos el cache)
-      queryClient.setQueryData(["todos"], (old: any[]) => {
-        return old
-          ? [optimisticTodo, ...old]
-          : [optimisticTodo];
-      });
+    // Aplicamos el cambio optimista (modificamos el cache)
+    queryClient.setQueryData(["todos"], (old: unknown) => {
+      const oldTodos = Array.isArray(old) ? old : [];
+      return [optimisticTodo, ...oldTodos];
+    });
 
       setNewTodoTitle("");
 
       return { previousTodos };
     },
-    onError: (_err, _newTodo, context) => {
-      // Revert on error
-      queryClient.setQueryData(["todos"], context?.previousTodos);
-    },
+  onError: (err, _newTodo, context) => {
+    // Revert on error
+    console.error("Failed to create todo:", err);
+    if (context?.previousTodos !== undefined) {
+      queryClient.setQueryData(["todos"], context.previousTodos);
+    } else {
+      queryClient.removeQueries({ queryKey: ["todos"] });
+    }
+  },
     onSettled: () => {
       // Refetch to ensure sync with server
       queryClient.invalidateQueries({ queryKey: ["todos"] });
@@ -159,27 +163,6 @@ function RouteComponent() {
       addTodoMutation.mutate(newTodoTitle.trim());
     }
   };
-
-  // Error state - API returned error message
-  if (data && typeof data === "object" && "message" in data) {
-    return (
-      <div className="container mx-auto max-w-2xl p-6">
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <div className="text-destructive flex items-start gap-3">
-              <AlertCircle className="mt-0.5 size-5 shrink-0" />
-              <div>
-                <p className="font-medium">Error loading todos</p>
-                <p className="text-muted-foreground text-sm">
-                  {(data as { message: string }).message}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // Error state - Query failed
   if (isError) {
