@@ -52,6 +52,119 @@ bun run build      # Production build
 bun run check-types # TypeScript + TanStack Router gen
 ```
 
+## Optimistic UI Pattern
+
+Use optimistic updates for instant UI feedback on mutations. The UI updates immediately, then syncs with the server.
+
+### Pattern Structure
+
+```typescript
+const mutation = useMutation({
+  mutationFn: async (variables) => {
+    // API call
+    const res = await api.endpoint.$method(variables);
+    if (!res.ok) throw new Error("Failed");
+    return res.json();
+  },
+
+  // 1. Optimistically update UI BEFORE request
+  onMutate: async (variables) => {
+    await queryClient.cancelQueries({ queryKey: ["data"] });
+    const previousData = queryClient.getQueryData(["data"]);
+
+    queryClient.setQueryData(["data"], (old) => {
+      // Return updated data
+      return updatedOld;
+    });
+
+    return { previousData }; // Context for rollback
+  },
+
+  // 2. Rollback on error
+  onError: (_err, _variables, context) => {
+    queryClient.setQueryData(["data"], context?.previousData);
+  },
+
+  // 3. Sync with server when settled
+  onSettled: () => {
+    queryClient.invalidateQueries({ queryKey: ["data"] });
+  },
+});
+```
+
+### Examples by Operation Type
+
+**Create (Add to list):**
+```typescript
+onMutate: async (newItem) => {
+  await queryClient.cancelQueries({ queryKey: ["items"] });
+  const previousItems = queryClient.getQueryData(["items"]);
+
+  const optimisticItem = {
+    id: `temp-${Date.now()}`,
+    ...newItem,
+    createdAt: new Date().toISOString(),
+  };
+
+  queryClient.setQueryData(["items"], (old) => {
+    return old ? [optimisticItem, ...old] : [optimisticItem];
+  });
+
+  return { previousItems };
+},
+```
+
+**Update (Modify existing):**
+```typescript
+onMutate: async ({ id, updates }) => {
+  await queryClient.cancelQueries({ queryKey: ["items"] });
+  const previousItems = queryClient.getQueryData(["items"]);
+
+  queryClient.setQueryData(["items"], (old) => {
+    return old?.map((item) =>
+      item.id === id ? { ...item, ...updates } : item
+    );
+  });
+
+  return { previousItems };
+},
+```
+
+**Delete (Remove from list):**
+```typescript
+onMutate: async (id) => {
+  await queryClient.cancelQueries({ queryKey: ["items"] });
+  const previousItems = queryClient.getQueryData(["items"]);
+
+  queryClient.setQueryData(["items"], (old) => {
+    return old?.filter((item) => item.id !== id);
+  });
+
+  return { previousItems };
+},
+```
+
+### Key Rules
+
+1. **Always cancel queries first** - Prevents race conditions
+2. **Snapshot previous data** - Needed for rollback
+3. **Return context from onMutate** - Passed to onError
+4. **Don't disable UI during mutation** - Let user interact freely
+5. **Always invalidate on settled** - Ensures server sync
+
+### When to Use
+
+| Use Optimistic | Don't Use |
+|---------------|-----------|
+| Toggle switches | Payment transactions |
+| Delete items | Irreversible actions |
+| Reorder lists | Critical data writes |
+| Like/upvote | Multi-step workflows |
+
+### Reference Implementation
+
+See `src/routes/todos.tsx` for complete optimistic UI implementation with all three operations (create, update, delete).
+
 ## Notes
 
 - Port 3001 (server runs on 3000)

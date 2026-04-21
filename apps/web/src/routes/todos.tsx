@@ -13,11 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Plus, Trash2, AlertCircle, ClipboardList } from "lucide-react";
 
 const client = hc<AppType>(env.VITE_SERVER_URL, {
-  fetch: (input: string | URL | Request, init?: RequestInit) =>
-    fetch(input, {
-      ...init,
-      credentials: "include",
-    }),
+  init: { credentials: "include" },
 });
 
 export const Route = createFileRoute("/todos")({
@@ -35,7 +31,7 @@ function RouteComponent() {
       if (!res.ok) throw new Error("Failed to fetch todos");
       return res.json();
     },
-  });
+  });//✅
 
   const addTodoMutation = useMutation({
     mutationFn: async (title: string) => {
@@ -45,9 +41,42 @@ function RouteComponent() {
       if (!res.ok) throw new Error("Failed to create todo");
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    onMutate: async (title) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+
+      // Snapshot previous value
+      const previousTodos = queryClient.getQueryData(["todos"]);
+
+      // Optimistically add new todo
+      const optimisticTodo = {
+        id: `temp-${Date.now()}`,
+        title,
+        description: "",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        userId: "",
+      };
+
+      // Aplicamos el cambio optimista (modificamos el cache)
+      queryClient.setQueryData(["todos"], (old: any[]) => {
+        return old
+          ? [optimisticTodo, ...old]
+          : [optimisticTodo];
+      });
+
       setNewTodoTitle("");
+
+      return { previousTodos };
+    },
+    onError: (_err, _newTodo, context) => {
+      // Revert on error
+      queryClient.setQueryData(["todos"], context?.previousTodos);
+    },
+    onSettled: () => {
+      // Refetch to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 
@@ -66,7 +95,28 @@ function RouteComponent() {
       if (!res.ok) throw new Error("Failed to update todo");
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ id, completed }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+
+      // Snapshot previous value
+      const previousTodos = queryClient.getQueryData(["todos"]);
+
+      // Optimistically update todo
+      queryClient.setQueryData(["todos"], (old: any[]) => {
+        return old?.map((todo) =>
+          todo.id === id ? { ...todo, completed } : todo,
+        );
+      });
+
+      return { previousTodos };
+    },
+    onError: (_err, _variables, context) => {
+      // Revert on error
+      queryClient.setQueryData(["todos"], context?.previousTodos);
+    },
+    onSettled: () => {
+      // Refetch to ensure sync with server
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
@@ -79,12 +129,31 @@ function RouteComponent() {
       if (!res.ok) throw new Error("Failed to delete todo");
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async (id) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+
+      // Snapshot previous value
+      const previousTodos = queryClient.getQueryData(["todos"]);
+
+      // Optimistically remove todo
+      queryClient.setQueryData(["todos"], (old: any[]) => {
+        return old?.filter((todo) => todo.id !== id);
+      });
+
+      return { previousTodos };
+    },
+    onError: (_err, _id, context) => {
+      // Revert on error
+      queryClient.setQueryData(["todos"], context?.previousTodos);
+    },
+    onSettled: () => {
+      // Refetch to ensure sync with server
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 
-  const handleAddTodo = (e: React.FormEvent) => {
+  const handleAddTodo = (e: React.SubmitEvent) => {
     e.preventDefault();
     if (newTodoTitle.trim()) {
       addTodoMutation.mutate(newTodoTitle.trim());
@@ -101,7 +170,9 @@ function RouteComponent() {
               <AlertCircle className="mt-0.5 size-5 shrink-0" />
               <div>
                 <p className="font-medium">Error loading todos</p>
-                <p className="text-muted-foreground text-sm">{data.message}</p>
+                <p className="text-muted-foreground text-sm">
+                  {(data as { message: string }).message}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -206,14 +277,13 @@ function RouteComponent() {
                 >
                   <Checkbox
                     id={`todo-${todo.id}`}
-                    checked={todo.completed}
+                    checked={todo.completed ?? false}
                     onCheckedChange={(checked) =>
                       toggleTodoMutation.mutate({
                         id: todo.id,
                         completed: checked === true,
                       })
                     }
-                    disabled={toggleTodoMutation.isPending}
                     aria-label={`Mark "${todo.title}" as ${todo.completed ? "incomplete" : "complete"}`}
                   />
                   <Label
@@ -233,7 +303,6 @@ function RouteComponent() {
                     variant="ghost"
                     size="icon"
                     onClick={() => deleteTodoMutation.mutate(todo.id)}
-                    disabled={deleteTodoMutation.isPending}
                     className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
                     aria-label={`Delete "${todo.title}"`}
                   >
