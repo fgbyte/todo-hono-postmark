@@ -59,25 +59,25 @@ function RouteComponent() {
         userId: "",
       };
 
-    // Aplicamos el cambio optimista (modificamos el cache)
-    queryClient.setQueryData(["todos"], (old: unknown) => {
-      const oldTodos = Array.isArray(old) ? old : [];
-      return [optimisticTodo, ...oldTodos];
-    });
+      // Aplicamos el cambio optimista (modificamos el cache)
+      queryClient.setQueryData(["todos"], (old: unknown) => {
+        const oldTodos = Array.isArray(old) ? old : [];
+        return [optimisticTodo, ...oldTodos];
+      });
 
       setNewTodoTitle("");
 
       return { previousTodos };
     },
-  onError: (err, _newTodo, context) => {
-    // Revert on error
-    console.error("Failed to create todo:", err);
-    if (context?.previousTodos !== undefined) {
-      queryClient.setQueryData(["todos"], context.previousTodos);
-    } else {
-      queryClient.removeQueries({ queryKey: ["todos"] });
-    }
-  },
+    onError: (err, _newTodo, context) => {
+      // Revert on error
+      console.error("Failed to create todo:", err);
+      if (context?.previousTodos !== undefined) {
+        queryClient.setQueryData(["todos"], context.previousTodos);
+      } else {
+        queryClient.removeQueries({ queryKey: ["todos"] });
+      }
+    },
     onSettled: () => {
       // Refetch to ensure sync with server
       queryClient.invalidateQueries({ queryKey: ["todos"] });
