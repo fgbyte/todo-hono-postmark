@@ -20,3 +20,23 @@ export const getTodosByUserId = async (userId: string) => {
     .orderBy(desc(todos.createdAt));
   return result;
 };
+
+export const updateTodo = async (
+  id: string,
+  data: Partial<typeof todos.$inferInsert>
+) => {
+  const [result] = await db
+    .update(todos)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(todos.id, id))
+    .returning();
+  return result;
+};
+
+export const deleteTodo = async (id: string) => {
+  const [result] = await db
+    .delete(todos)
+    .where(eq(todos.id, id))
+    .returning();
+  return result;
+};

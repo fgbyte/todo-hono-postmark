@@ -6,6 +6,8 @@ import {
   getTodosByUserId,
   getTodoById,
   insertTodo,
+  updateTodo,
+  deleteTodo,
 } from "@todo-hono-postmark/db/queries/todos";
 import { authMiddleware } from "@/middlewares/auth-middleware";
 import type { HonoEnv } from "@/middlewares/auth-middleware";
@@ -48,6 +50,65 @@ export const todosRoute = new Hono<HonoEnv>()
     } catch (error) {
       return c.json({ message: "Failed to create todo", err: error }, 500);
     }
-  });
+  })
+  // PATCH /api/todos/:id - Update todo
+  .patch(
+    "/:id",
+    zValidator("param", z.object({ id: z.string() })),
+    zValidator(
+      "json",
+      z.object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+        completed: z.boolean().optional(),
+      })
+    ),
+    async (c) => {
+      const user = c.get("user");
+      const { id } = c.req.valid("param");
+      const updateData = c.req.valid("json");
+
+      try {
+        // Check if todo exists and belongs to user
+        const existingTodo = await getTodoById(id);
+        if (!existingTodo) {
+          return c.json({ message: "Todo not found" }, 404);
+        }
+        if (existingTodo.userId !== user.id) {
+          return c.json({ message: "Unauthorized" }, 403);
+        }
+
+        const updatedTodo = await updateTodo(id, updateData);
+        return c.json(updatedTodo, 200);
+      } catch (error) {
+        return c.json({ message: "Failed to update todo", err: error }, 500);
+      }
+    }
+  )
+  // DELETE /api/todos/:id - Delete todo
+  .delete(
+    "/:id",
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const user = c.get("user");
+      const { id } = c.req.valid("param");
+
+      try {
+        // Check if todo exists and belongs to user
+        const existingTodo = await getTodoById(id);
+        if (!existingTodo) {
+          return c.json({ message: "Todo not found" }, 404);
+        }
+        if (existingTodo.userId !== user.id) {
+          return c.json({ message: "Unauthorized" }, 403);
+        }
+
+        await deleteTodo(id);
+        return c.json({ message: "Todo deleted successfully" }, 200);
+      } catch (error) {
+        return c.json({ message: "Failed to delete todo", err: error }, 500);
+      }
+    }
+  );
 
 export type TodosRouteType = typeof todosRoute;
