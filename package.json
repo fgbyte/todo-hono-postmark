@@ -37,7 +37,6 @@
     "dev:server": "turbo -F server dev",
     "db:dev-up": "docker compose up -d",
     "db:dev-down": "docker compose down",
-    "db:push": "turbo -F @todo-hono-postmark/db db:push",
     "db:studio": "turbo -F @todo-hono-postmark/db db:studio",
     "db:generate": "turbo -F @todo-hono-postmark/db db:generate",
     "db:migrate": "turbo -F @todo-hono-postmark/db db:migrate",

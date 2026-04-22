@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const localEnvPath = resolve(".env.local");
 if (existsSync(localEnvPath)) {
   config({ path: localEnvPath });
-  console.log("[drizzle] Loaded local .env.local");
+  console.log("[drizzle🌧️] Loaded local .env.local");
 } else {
   console.warn(
     "[drizzle] No local packages/db/.env.local found. Make sure to create one with DATABASE_URL for development.",
@@ -21,6 +21,6 @@ export default defineConfig({
   casing: "snake_case",
   dbCredentials: {
     url: process.env.DATABASE_URL || "",
-    ssl: true,
+    ssl: { rejectUnauthorized: false },
   },
 });

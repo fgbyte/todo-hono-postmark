@@ -10,10 +10,9 @@
     }
   },
   "scripts": {
-    "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "bun run src/migrate.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -25,7 +24,9 @@
   },
   "devDependencies": {
     "@todo-hono-postmark/config": "workspace:*",
+    "@types/ws": "^8.18.1",
     "drizzle-kit": "^0.31.10",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "ws": "^8.20.0"
   }
 }
