@@ -5,6 +5,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { sendEmail } from "@todo-hono-postmark/mail";
 import { openAPI } from "better-auth/plugins";
+import bcrypt from "bcryptjs";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,6 +16,15 @@ export const auth = betterAuth({
   trustedOrigins: [env.CORS_ORIGIN],
   emailAndPassword: {
     enabled: true,
+    password: {
+      //config manual del hash compatible con workers
+      hash: async (password) => {
+        return bcrypt.hash(password, 10); // Cost 10 en lugar de 12
+      },
+      verify: async ({ hash, password }) => {
+        return bcrypt.compare(password, hash);
+      },
+    },
     requireEmailVerification: true, // Require email verification before login
   },
   plugins: [openAPI()], //Activate OpenAPI DOCS 👈

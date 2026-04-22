@@ -17,6 +17,7 @@
     "@todo-hono-postmark/db": "workspace:*",
     "@todo-hono-postmark/env": "workspace:*",
     "@todo-hono-postmark/mail": "workspace:*",
+    "bcryptjs": "^3.0.3",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
     "zod": "catalog:"
