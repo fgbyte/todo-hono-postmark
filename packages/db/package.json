@@ -15,7 +15,7 @@
     "db:migrate": "bun run src/migrate.ts"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
+    "@neondatabase/serverless": "^1.1.0",
     "@todo-hono-postmark/env": "workspace:*",
     "dotenv": "catalog:",
     "drizzle-orm": "^0.45.2",
