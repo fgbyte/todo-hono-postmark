@@ -145,7 +145,7 @@ Fix:
 When copying this setup:
 
 1. Copy the same workflow/script pattern.
-2. Add `AUTOMATION_GH_TOKEN` secret in target repo.
+2. Add `AUTOMATION_GH_TOKEN` secret in target repo
 3. Enable Actions PR create/approve permission in target repo.
 4. Verify CI workflow triggers on PRs.
 5. Run one manual dispatch and validate safe/major behavior.
