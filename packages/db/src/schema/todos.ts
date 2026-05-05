@@ -1,11 +1,4 @@
-import {
-  boolean,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import type z from "zod";

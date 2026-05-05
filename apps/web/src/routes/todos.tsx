@@ -49,67 +49,63 @@ function RouteComponent() {
     },
   }); //✅
 
-  const addTodoMutation = useMutation<Todo, Error, string, TodoMutationContext>(
-    {
-      mutationFn: async (title: string) => {
-        const res = await client.api.todos.$post({
-          json: { title, description: "" },
-        });
-        if (!res.ok) throw new Error("Failed to create todo");
-        return res.json() as Promise<Todo>;
-      },
-      onMutate: async (title) => {
-        // Cancel outgoing refetches
-        await queryClient.cancelQueries({ queryKey: ["todos"] });
-
-        // Snapshot previous value with proper typing
-        const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
-
-        // Optimistically add new todo
-        const optimisticTodo: Todo = {
-          id: `temp-${Date.now()}`,
-          title,
-          description: "",
-          completed: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          userId: "",
-        };
-
-        // Apply optimistic update with proper typing
-        queryClient.setQueryData<Todo[]>(["todos"], (old) => {
-          const oldTodos = old ?? [];
-          return [optimisticTodo, ...oldTodos];
-        });
-
-        setNewTodoTitle("");
-
-        return { previousTodos, optimisticTodo };
-      },
-      onSuccess: (data, _variables, context) => {
-        // Replace optimistic todo with real server response
-        queryClient.setQueryData<Todo[]>(["todos"], (old) => {
-          if (!old) return [data];
-          return old.map((todo) =>
-            todo.id === context?.optimisticTodo?.id ? data : todo,
-          );
-        });
-      },
-      onError: (err, _newTodo, context) => {
-        // Revert on error
-        console.error("Failed to create todo:", err);
-        if (context?.previousTodos !== undefined) {
-          queryClient.setQueryData(["todos"], context.previousTodos);
-        } else {
-          queryClient.removeQueries({ queryKey: ["todos"] });
-        }
-      },
-      onSettled: () => {
-        // Refetch to ensure sync with server
-        queryClient.invalidateQueries({ queryKey: ["todos"] });
-      },
+  const addTodoMutation = useMutation<Todo, Error, string, TodoMutationContext>({
+    mutationFn: async (title: string) => {
+      const res = await client.api.todos.$post({
+        json: { title, description: "" },
+      });
+      if (!res.ok) throw new Error("Failed to create todo");
+      return res.json() as Promise<Todo>;
     },
-  );
+    onMutate: async (title) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+
+      // Snapshot previous value with proper typing
+      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
+
+      // Optimistically add new todo
+      const optimisticTodo: Todo = {
+        id: `temp-${Date.now()}`,
+        title,
+        description: "",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        userId: "",
+      };
+
+      // Apply optimistic update with proper typing
+      queryClient.setQueryData<Todo[]>(["todos"], (old) => {
+        const oldTodos = old ?? [];
+        return [optimisticTodo, ...oldTodos];
+      });
+
+      setNewTodoTitle("");
+
+      return { previousTodos, optimisticTodo };
+    },
+    onSuccess: (data, _variables, context) => {
+      // Replace optimistic todo with real server response
+      queryClient.setQueryData<Todo[]>(["todos"], (old) => {
+        if (!old) return [data];
+        return old.map((todo) => (todo.id === context?.optimisticTodo?.id ? data : todo));
+      });
+    },
+    onError: (err, _newTodo, context) => {
+      // Revert on error
+      console.error("Failed to create todo:", err);
+      if (context?.previousTodos !== undefined) {
+        queryClient.setQueryData(["todos"], context.previousTodos);
+      } else {
+        queryClient.removeQueries({ queryKey: ["todos"] });
+      }
+    },
+    onSettled: () => {
+      // Refetch to ensure sync with server
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
 
   const toggleTodoMutation = useMutation<
     Todo,
@@ -117,13 +113,7 @@ function RouteComponent() {
     { id: string; completed: boolean },
     TodoMutationContext
   >({
-    mutationFn: async ({
-      id,
-      completed,
-    }: {
-      id: string;
-      completed: boolean;
-    }) => {
+    mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
       const res = await client.api.todos[":id"].$patch({
         param: { id },
         json: { completed },
@@ -141,9 +131,7 @@ function RouteComponent() {
       // Optimistically update todo with proper typing
       queryClient.setQueryData<Todo[]>(["todos"], (old) => {
         if (!old) return old;
-        return old.map((todo) =>
-          todo.id === id ? { ...todo, completed } : todo,
-        );
+        return old.map((todo) => (todo.id === id ? { ...todo, completed } : todo));
       });
 
       return { previousTodos };
@@ -166,12 +154,7 @@ function RouteComponent() {
     // This avoids the flicker from refetching
   });
 
-  const deleteTodoMutation = useMutation<
-    unknown,
-    Error,
-    string,
-    TodoMutationContext
-  >({
+  const deleteTodoMutation = useMutation<unknown, Error, string, TodoMutationContext>({
     mutationFn: async (id: string) => {
       const res = await client.api.todos[":id"].$delete({
         param: { id },
@@ -228,9 +211,7 @@ function RouteComponent() {
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() =>
-                queryClient.invalidateQueries({ queryKey: ["todos"] })
-              }
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["todos"] })}
             >
               Retry
             </Button>
@@ -273,9 +254,7 @@ function RouteComponent() {
             </div>
             <Button
               type="submit"
-              disabled={
-                isLoading || addTodoMutation.isPending || !newTodoTitle.trim()
-              }
+              disabled={isLoading || addTodoMutation.isPending || !newTodoTitle.trim()}
             >
               <Plus className="size-4" />
               Add

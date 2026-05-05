@@ -41,7 +41,7 @@ export const todosRoute = new Hono<HonoEnv>()
   .post("/", zValidator("json", CreateTodoSchema), async (c) => {
     const user = c.get("user");
     console.log("POST /api/todos - user:", user?.id);
-    
+
     let todoData;
     try {
       todoData = c.req.valid("json");
@@ -50,7 +50,7 @@ export const todosRoute = new Hono<HonoEnv>()
       console.error("POST /api/todos - validation error:", e);
       return c.json({ message: "Invalid request body", error: String(e) }, 400);
     }
-    
+
     try {
       const newTodo = await insertTodo({
         ...todoData,
@@ -73,7 +73,7 @@ export const todosRoute = new Hono<HonoEnv>()
         title: z.string().optional(),
         description: z.string().optional(),
         completed: z.boolean().optional(),
-      })
+      }),
     ),
     async (c) => {
       const user = c.get("user");
@@ -95,32 +95,28 @@ export const todosRoute = new Hono<HonoEnv>()
       } catch (error) {
         return c.json({ message: "Failed to update todo", err: error }, 500);
       }
-    }
+    },
   )
   // DELETE /api/todos/:id - Delete todo
-  .delete(
-    "/:id",
-    zValidator("param", z.object({ id: z.string() })),
-    async (c) => {
-      const user = c.get("user");
-      const { id } = c.req.valid("param");
+  .delete("/:id", zValidator("param", z.object({ id: z.string() })), async (c) => {
+    const user = c.get("user");
+    const { id } = c.req.valid("param");
 
-      try {
-        // Check if todo exists and belongs to user
-        const existingTodo = await getTodoById(id);
-        if (!existingTodo) {
-          return c.json({ message: "Todo not found" }, 404);
-        }
-        if (existingTodo.userId !== user.id) {
-          return c.json({ message: "Unauthorized" }, 403);
-        }
-
-        await deleteTodo(id);
-        return c.json({ message: "Todo deleted successfully" }, 200);
-      } catch (error) {
-        return c.json({ message: "Failed to delete todo", err: error }, 500);
+    try {
+      // Check if todo exists and belongs to user
+      const existingTodo = await getTodoById(id);
+      if (!existingTodo) {
+        return c.json({ message: "Todo not found" }, 404);
       }
+      if (existingTodo.userId !== user.id) {
+        return c.json({ message: "Unauthorized" }, 403);
+      }
+
+      await deleteTodo(id);
+      return c.json({ message: "Todo deleted successfully" }, 200);
+    } catch (error) {
+      return c.json({ message: "Failed to delete todo", err: error }, 500);
     }
-  );
+  });
 
 export type TodosRouteType = typeof todosRoute;

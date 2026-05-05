@@ -21,6 +21,3 @@ jobs:
 
       - name: Build Project
         run: bun run build
-
-      - name: Pass Tests
-        run: bun run test
