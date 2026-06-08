@@ -10,7 +10,7 @@
   "dependencies": {
     "@hono/zod-openapi": "^1.4.0",
     "@hono/zod-validator": "^0.8.0",
-    "@scalar/hono-api-reference": "^0.10.19",
+    "@scalar/hono-api-reference": "^0.10.20",
     "@todo-hono-postmark/auth": "workspace:*",
     "@todo-hono-postmark/db": "workspace:*",
     "@todo-hono-postmark/env": "workspace:*",
@@ -28,7 +28,7 @@
     "@vitest/ui": "catalog:",
     "alchemy": "catalog:",
     "jsdom": "catalog:",
-    "tsdown": "^0.22.1",
+    "tsdown": "^0.22.2",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "^4.95.0"
