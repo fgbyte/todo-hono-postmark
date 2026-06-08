@@ -19,7 +19,7 @@
     "@tanstack/react-form": "^1.33.0",
     "@tanstack/react-query": "^5.100.14",
     "@tanstack/react-query-devtools": "^5.100.9",
-    "@tanstack/react-router": "^1.170.10",
+    "@tanstack/react-router": "^1.170.15",
     "@tanstack/react-store": "^0.11.0",
     "@tanstack/store": "^0.11.0",
     "@todo-hono-postmark/auth": "workspace:*",
