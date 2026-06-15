@@ -13,7 +13,7 @@
   },
   "scripts": {},
   "dependencies": {
-    "@better-auth/drizzle-adapter": "^1.6.14",
+    "@better-auth/drizzle-adapter": "^1.6.18",
     "@todo-hono-postmark/db": "workspace:*",
     "@todo-hono-postmark/env": "workspace:*",
     "@todo-hono-postmark/mail": "workspace:*",
