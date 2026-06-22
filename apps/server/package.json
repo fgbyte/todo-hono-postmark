@@ -10,7 +10,7 @@
   "dependencies": {
     "@hono/zod-openapi": "^1.4.0",
     "@hono/zod-validator": "^0.8.0",
-    "@scalar/hono-api-reference": "^0.11.3",
+    "@scalar/hono-api-reference": "^0.11.4",
     "@todo-hono-postmark/auth": "workspace:*",
     "@todo-hono-postmark/db": "workspace:*",
     "@todo-hono-postmark/env": "workspace:*",
