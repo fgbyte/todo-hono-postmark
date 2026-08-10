@@ -28,7 +28,7 @@
     "@vitest/ui": "catalog:",
     "alchemy": "catalog:",
     "jsdom": "catalog:",
-    "tsdown": "^0.22.3",
+    "tsdown": "^0.22.14",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "wrangler": "^4.119.0"
