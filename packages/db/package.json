@@ -18,14 +18,14 @@
     "@neondatabase/serverless": "^1.1.0",
     "@todo-hono-postmark/env": "workspace:*",
     "dotenv": "catalog:",
-    "drizzle-orm": "^0.45.2",
+    "drizzle-orm": "^0.45.3",
     "drizzle-zod": "^0.8.3",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@todo-hono-postmark/config": "workspace:*",
     "@types/ws": "^8.18.1",
-    "drizzle-kit": "^0.31.10",
+    "drizzle-kit": "^0.31.11",
     "typescript": "catalog:",
     "ws": "^8.21.0"
   }
