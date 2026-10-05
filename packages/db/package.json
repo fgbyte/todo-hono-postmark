@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@todo-hono-postmark/config": "workspace:*",
-    "@types/ws": "^8.18.1",
+    "@types/ws": "^8.18.2",
     "drizzle-kit": "^0.31.10",
     "typescript": "catalog:",
     "ws": "^8.21.0"
